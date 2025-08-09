@@ -1,6 +1,7 @@
 const express = require('express');
 const prisma = require('../config/prisma');
 const router = express.Router();
+const bcrypt = require('bcrypt') 
 
 exports.getAllUsers = async (req, res) => {
     try {
@@ -15,15 +16,17 @@ exports.getAllUsers = async (req, res) => {
 exports.createUser = async(req, res) => {
     try{
         const {fullname, email, password} = req.body;
-
         if(!fullname || !email || !password){
             return res.status(400).json({error: "fullname, email, and password are required"})
         }
-
+        
+        const hashedPassword = await bcrypt.hash(password, 10)
         const newUser = await prisma.users.create({
-            data: {fullname, email, password}
+            data: {fullname, email, password: hashedPassword}
         })
-        res.status(201).json(newUser)
+           const { password: _, ...userWithoutPassword } = newUser;
+
+    res.status(201).json(userWithoutPassword);
 
     } catch(error) {
         console.error(error);
