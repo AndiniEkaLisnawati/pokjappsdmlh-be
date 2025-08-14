@@ -23,3 +23,32 @@ enum role {
   user
   admin
 }
+
+model LPK {
+  id                     String       @id @default(uuid())
+  name                   String
+  type                   String
+  locations              String
+  programs               String[]
+  status                 String
+  accreditationNumber    String
+  contactPerson          String
+  phone                  String
+  created_at             DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at             DateTime  @default(now()) @db.Timestamptz(6)
+}
+
+model partnership {
+  id                     String       @id @default(uuid())
+  scope                  String
+  partnerName            String
+  pksNumber              String
+  region                 String
+  trainingsHeld          String
+  startDate              DateTime
+  endDate                DateTime
+  status                 String
+  category               String
+  created_at             DateTime      @default(now()) @db.Timestamptz(6)
+  updated_at             DateTime      @default(now()) @db.Timestamptz(6)
+}
