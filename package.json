@@ -2,14 +2,15 @@
   "name": "backend",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/index.js",
-    "build": "prisma generate",
-    "migrate": "prisma migrate dev --name init",
-    "format": "prettier --write .",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
-  },
+"scripts": {
+  "dev": "nodemon src/index.js",
+  "start": "node src/index.js",
+  "build": "echo 'Nothing to build'",
+  "postinstall": "prisma generate",
+  "migrate": "prisma migrate dev --name init",
+  "format": "prettier --write .",
+  "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+},
   "author": "zidan",
   "license": "ISC",
   "description": "",
