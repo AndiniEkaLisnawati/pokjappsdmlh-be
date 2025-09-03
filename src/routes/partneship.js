@@ -7,7 +7,11 @@ require('dotenv').config();
 const router = express.Router();
 const prisma = new PrismaClient();
 
-const supabase = createClient(process.env.DATABASE_URL, process.env.JWT_SECRET);
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
 
 const upload = multer({ storage: multer.memoryStorage() });
 
