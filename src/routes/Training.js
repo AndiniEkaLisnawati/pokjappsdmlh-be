@@ -24,7 +24,7 @@ router.put('/:id', async (req, res) => {
     const data = req.body;
     try {
         const updatedTraining = await prisma.training.update({
-            where: { id: Number(id) },
+            where: { id: String(id) },
             data: data
         });
         res.json(updatedTraining);
