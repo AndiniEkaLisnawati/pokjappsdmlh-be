@@ -38,7 +38,7 @@ router.delete('/:id', async (req, res) => {
     const { id } = req.params;
     try {
         await prisma.training.delete({
-            where: { id: Number(id) }
+            where: { id: String(id) }
         });
         res.json({ message: 'Deleted successfully' });
     } catch (err) {
