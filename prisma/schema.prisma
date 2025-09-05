@@ -54,6 +54,96 @@ model partnership {
   updated_at    DateTime @default(now()) @db.Timestamptz(6)
 }
 
+model Training {
+  id                String      @id @default(uuid())
+  title             String
+  instructor        String
+  duration          String
+  participants      Int
+  maleParticipants  Int
+  femaleParticipants Int
+  trainersCount     Int
+  date              DateTime
+  location          String
+  status            String
+  type              String
+
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime @default(now()) @db.Timestamptz(6)
+}
+
+model CompletedTraining {
+  id              String      @id @default(uuid())
+  title           String
+  participants    Int
+  completionDate  DateTime
+  duration        String
+  location        String
+  totalCertificate Int
+  certificate     String
+  satisfaction    Int
+
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime @default(now()) @db.Timestamptz(6)
+}
+
+model Activity {
+  id           String      @id @default(uuid())
+  title        String
+  date         DateTime
+  location     String
+  type         String
+  participants Int
+  photos       Int
+  description  String
+  image        String    
+  photosUrl    String?   
+
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime @default(now()) @db.Timestamptz(6)
+}
+
+model Curriculum {
+  id          String      @id @default(uuid())
+  title       String
+  field       String
+  level       String
+  duration    String       
+  lastUpdated DateTime
+  version     String
+  status      String
+  description String
+  modules     Int
+  fileLink    String?    
+
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime @default(now()) @db.Timestamptz(6)
+}
+
+model Lecturer {
+  id           String      @id @default(uuid())
+  name                String
+  photo               String
+  expertise           String[]   
+  position            String
+  education           String
+  experience          String
+  certifications      String[]   
+  email               String     @unique
+  phone               String?
+  trainings_conducted Int
+  participants_trained Int
+  status              String
+  type                String
+
+
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime @default(now()) @db.Timestamptz(6)
+}
+
+
+
+
 
 enum role {
   user
