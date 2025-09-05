@@ -20,11 +20,11 @@ router.get('/', async (req, res) => {
 });
 
 router.put('/:id', async (req, res) => {
-    const { id } = req.params;
+    const id = req.params.id;
     const data = req.body;
     try {
         const updatedCompleteTraining = await prisma.completedTraining.update({
-            where: { id: Number(id) },
+            where: { id: String(id) },
             data: data
         });
         res.json(updatedCompleteTraining);
@@ -35,10 +35,10 @@ router.put('/:id', async (req, res) => {
     }
 });
 router.delete('/:id', async (req, res) => {
-    const { id } = req.params;
+    const id = req.params.id;
     try {
         await prisma.completedTraining.delete({
-            where: { id: Number(id) }
+            where: { id: String(id) }
         });
         res.json({ message: 'Deleted successfully' });
     }
