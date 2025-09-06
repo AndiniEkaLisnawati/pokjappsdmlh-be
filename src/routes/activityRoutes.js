@@ -24,7 +24,8 @@ router.post('/', upload.single('activityImage'), async (req, res) => {
       image,
       photosUrl,
     } = req.body;
-    let activityImageUrl = null;
+
+    let activityImageUrl = image || "";
 
     if (req.file) {
       const { data, error } = await supabase.storage
@@ -34,22 +35,28 @@ router.post('/', upload.single('activityImage'), async (req, res) => {
           upsert: false,
           contentType: req.file.mimetype,
         });
-      if (error) {
-        throw error;
-      }
-      const { publicURL, error: urlError } = supabase.storage
-        .from('activity-images')
-        .getPublicUrl(data.path);
-      if (urlError) {
-        throw urlError;
-      }
-      activityImageUrl = publicURL;
+      if (error) throw error;
+
+const { publicUrl, error: urlError } = supabase.storage
+  .from('activity-images')
+  .getPublicUrl(data.path);
+activityImageUrl = publicUrl;
+
+
+      activityImageUrl = publicUrl;
     }
 
     const newActivity = await prisma.activity.create({
       data: {
-        ...req.body,
-        activityImage: activityImageUrl,
+        title,
+        date: new Date(date), 
+        location,
+        type,
+        participants: parseInt(participants), 
+        photos: parseInt(photos),
+        description,
+        image: activityImageUrl, 
+        photosUrl,
       },
     });
 
@@ -74,6 +81,7 @@ router.put('/:id', upload.single('activityImage'), async (req, res) => {
   const { id } = req.params;
   try {
     let activityImageUrl = req.body.image || null;
+
     if (req.file) {
       const { data, error } = await supabase.storage
         .from('activity-images')
@@ -82,23 +90,28 @@ router.put('/:id', upload.single('activityImage'), async (req, res) => {
           upsert: false,
           contentType: req.file.mimetype,
         });
-      if (error) {
-        throw error;
-      }
-      const { publicURL, error: urlError } = supabase.storage
+      if (error) throw error;
+
+      const { data: publicUrlData, error: urlError } = supabase.storage
         .from('activity-images')
         .getPublicUrl(data.path);
-      if (urlError) {
-        throw urlError;
-      }
-      activityImageUrl = publicURL;
+      if (urlError) throw urlError;
+
+      activityImageUrl = publicUrlData.publicUrl;
     }
 
     const updatedActivity = await prisma.activity.update({
       where: { id: String(id) },
       data: {
-        ...req.body,
-        activityImage: activityImageUrl,
+        title: req.body.title,
+        date: new Date(req.body.date),
+        location: req.body.location,
+        type: req.body.type,
+        participants: parseInt(req.body.participants),
+        photos: parseInt(req.body.photos),
+        description: req.body.description,
+        image: activityImageUrl,
+        photosUrl: req.body.photosUrl,
       },
     });
 
@@ -108,6 +121,7 @@ router.put('/:id', upload.single('activityImage'), async (req, res) => {
     res.status(500).json({ error: 'Error updating activity' });
   }
 });
+
 
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
