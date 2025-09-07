@@ -28,6 +28,7 @@ router.post('/', upload.single('activityImage'), async (req, res) => {
     let activityImageUrl = image || "";
 
     if (req.file) {
+  
       const { data, error } = await supabase.storage
         .from('activity-images')
         .upload(`public/${Date.now()}_${req.file.originalname}`, req.file.buffer, {
@@ -37,25 +38,25 @@ router.post('/', upload.single('activityImage'), async (req, res) => {
         });
       if (error) throw error;
 
-const { publicUrl, error: urlError } = supabase.storage
-  .from('activity-images')
-  .getPublicUrl(data.path);
-activityImageUrl = publicUrl;
+   
+      const { data: publicUrlData, error: urlError } = supabase.storage
+        .from('activity-images')
+        .getPublicUrl(data.path);
+      if (urlError) throw urlError;
 
-
-      activityImageUrl = publicUrl;
+      activityImageUrl = publicUrlData.publicUrl;
     }
 
     const newActivity = await prisma.activity.create({
       data: {
         title,
-        date: new Date(date), 
+        date: new Date(date),
         location,
         type,
-        participants: parseInt(participants), 
+        participants: parseInt(participants),
         photos: parseInt(photos),
         description,
-        image: activityImageUrl, 
+        image: activityImageUrl,
         photosUrl,
       },
     });
@@ -63,9 +64,10 @@ activityImageUrl = publicUrl;
     res.status(201).json(newActivity);
   } catch (error) {
     console.error('Error creating activity:', error);
-    res.status(500).json({ error: 'Error creating activity' });
+    res.status(500).json({ error: 'Error creating activity', details: error.message });
   }
 });
+
 
 router.get('/', async (req, res) => {
   try {
