@@ -129,9 +129,7 @@ router.put('/:id', upload.single('activityImage'), async (req, res) => {
         date: req.body.date ? new Date(req.body.date) : existing.date,
         location: req.body.location || existing.location,
         type: req.body.type || existing.type,
-        participants: req.body.participants
-          ? parseInt(req.body.participants)
-          : existing.participants,
+        participants: req.body.participants? parseInt(req.body.participants): existing.participants,
         photos: req.body.photos ? parseInt(req.body.photos) : existing.photos,
         description: req.body.description || existing.description,
         image: activityImageUrl,
