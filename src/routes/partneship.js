@@ -93,9 +93,24 @@ router.get('/', async (req, res) => {
 router.put('/:id', upload.single('logo'), async (req, res) => {
   try {
     const { id } = req.params;
+
+    const existing = await prisma.partnership.findUnique({
+      where: { id: String(id) },
+    });
+
+    if (!existing) {
+      return res.status(404).json({ status: "error", message: "Partnership not found!" });
+    }
+    
     const data = { ...req.body };
 
     if (req.file) {
+      const prefix = "/storage/v1/object/public/logos/";
+      if (existing.logoUrl.includes(prefix)) {
+        const path = existing.logoUrl.split(prefix)[1];
+        await supabase.storage.from("logos").remove([path]);
+      }
+
       const fileName = `partner-logos/${Date.now()}-${req.file.originalname}`;
       const { data: uploaded, error } = await supabase.storage
         .from('logos')
@@ -115,7 +130,12 @@ router.put('/:id', upload.single('logo'), async (req, res) => {
 
     const updated = await prisma.partnership.update({
       where: { id: String(id) },
-      data,
+      data: {
+        ...data,
+        startDate: data.startDate ? new Date(data.startDate) : existing.startDate,
+        endDate: data.endDate ? new Date(data.endDate) : existing.endDate,
+        trainingsHeld: data.trainingsHeld ? Number(data.trainingsHeld) : existing.trainingsHeld,
+      }
     });
 
     res.json({ status: "success", data: updated });
@@ -125,9 +145,29 @@ router.put('/:id', upload.single('logo'), async (req, res) => {
 });
 
 router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
   try {
+    const existing = await prisma.partnership.findUnique({
+      where: { id: String(id) },
+    });
+
+    if (!existing) {
+      return res.status(404).json({ status: "error", message: "Partnership not found!" });
+    }
+
+   
+    if (existing.logoUrl) {
+      const url = new URL(existing.logoUrl);
+      const path = url.pathname.replace('/storage/v1/object/public/logos/', '');
+      console.log("Deleting file:", path);
+
+      const { error: deleteError } = await supabase.storage.from("logos").remove([path]);
+      if (deleteError) console.error("Error deleting logo:", deleteError);
+    }
+
+    
     await prisma.partnership.delete({
-      where: { id: String(req.params.id) }
+      where: { id: String(id) },
     });
 
     res.json({ status: "success", message: "Deleted successfully" });
@@ -135,5 +175,4 @@ router.delete('/:id', async (req, res) => {
     res.status(400).json({ status: "error", message: err.message });
   }
 });
-
 module.exports = router;

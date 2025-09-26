@@ -144,6 +144,15 @@ model Lecturer {
 }
 
 
+model SiteSettings {
+  id            Int      @id @default(autoincrement())
+  siteTitle     String   @db.VarChar(255)
+  siteTagline   String   @db.VarChar(255)
+  contactEmail  String   @db.VarChar(255)
+  contactPhone  String   @db.VarChar(50)
+  address       String   @db.Text
+  updatedAt     DateTime @updatedAt
+}
 
 
 
